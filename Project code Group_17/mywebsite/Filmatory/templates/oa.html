@@ -17,6 +17,8 @@
 			<header id="header">
 				<a class="logo" href="{% url 'home' %}">CineBuzz...</a>
 				<nav>
+					<a href"#">{{request.user}}</a>
+					<a href="{% url 'login' %}">logout</a>
 					<a href="#menu">Menu</a>
 				</nav>
 			</header>
@@ -85,6 +87,7 @@
 
 
 <h1><center>Overall Sentiment Analysis of the Tweets Extracted </center></h1>
+<h1>{{content}}</h1>
 
 				<section id="main" class="wrapper">
 					<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
@@ -93,15 +96,16 @@
 								google.charts.setOnLoadCallback(drawChart);
 
 								function drawChart() {
+									var positive = {{positive}};
+									var negative= {{negative}};
+									var neutral = {{neutral}};
 
-									var list1= {% block content %}{{content}}{% endblock content %};
-					        var list2= {% block content1 %}{{content1}}{% endblock content1 %};
-					        var list3={% block content2 %}{{content2}}{% endblock content2 %};
+
 					        var data = google.visualization.arrayToDataTable([
 					          ['Review', 'No of Tweets'],
-					          ['Negative Reviews', list2],
-					          ['Neutral Reviews', list3],
-					          ['Positive Reviews',list1],
+					          ['Negative Reviews',negative],
+					          ['Neutral Reviews', neutral],
+					          ['Positive Reviews',positive],
 					        ]);
 
 

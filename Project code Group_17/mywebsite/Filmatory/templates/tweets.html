@@ -21,6 +21,8 @@
 			<header id="header">
 				<a class="logo" href="{% url 'home' %}">CineBuzz...</a>
 				<nav>
+					<a href"#">{{request.user}}</a>
+					<a href="{% url 'login' %}">logout</a>
 					<a href="#menu">Menu</a>
 				</nav>
 			</header>
