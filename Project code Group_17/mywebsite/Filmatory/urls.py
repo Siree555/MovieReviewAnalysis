@@ -10,6 +10,7 @@ urlpatterns = [
     url(r'^login$',views.loginpage,name="login"),
     url(r'^logout$',views.logoutpage,name="logout"),
     url(r'^register$',views.register,name="register"),
+    url(r'^search$',views.searchview,name="search"),
 
 
 

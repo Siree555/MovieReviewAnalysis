@@ -9,15 +9,16 @@ import tweepy
 from importlib import reload
 from textblob import TextBlob
 from .forms import Searchform
+from django import forms
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
+
 from django.contrib import messages
 from django.contrib.auth import authenticate,login,logout
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import cache_control
-
 from .forms import CreateUserForm
-
-
+from .models import MovieNames
 
 # Create your views here.
 
@@ -26,6 +27,7 @@ from .forms import CreateUserForm
 
 
 def loginpage(request):
+    next=request.GET.get('next')
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
@@ -33,13 +35,15 @@ def loginpage(request):
 
         if user is not None:
             login(request, user)
+            if next:
+                return redirect('login')
             return redirect('home')
         else:
             messages.info(request,'User name or password is incorrect')
 
     context={}
     return render(request,'login.html')
-
+@login_required(login_url='login')
 def logoutpage(request):
     logout(request)
     return redirect('login')
@@ -76,6 +80,8 @@ def HomePageView(request):
         searchform = Searchform(request.POST)
         if searchform.is_valid():
             searchtext='%s' %(searchform.cleaned_data['search'])
+            searchform.save()
+
             #get the name of the spreadsheet we will write to
             fname = '_'.join(re.findall(r"#(\w+)", searchtext))
 
@@ -89,7 +95,7 @@ def HomePageView(request):
 
                 #for each tweet matching our hashtags, write relevant info to the spreadsheet
                 for tweet in tweepy.Cursor(api.search, q=searchtext+' -filter:retweets', \
-                                           lang="en", tweet_mode='extended').items(1000):
+                                           lang="en", tweet_mode='extended').items(100):
                     w.writerow([tweet.full_text.replace('\n',' ').encode('utf-8')])
 
             form = Searchform()
@@ -172,3 +178,9 @@ def oaPageView(request):
 
 
     return render(request,'oa.html',{'positive':good, 'negative':bad,'neutral':avg})
+
+
+def searchview(request):
+    posts=MovieNames.objects.all()
+    users=User.objects.all()
+    return render(request,'search.html',{'post':posts,'user':users})
